@@ -115,7 +115,7 @@
         columns: [
             { data: null, render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1 },
 
-            { data: "rolename" },
+            { data: "name" },
             { data: "description" },
 
            {
