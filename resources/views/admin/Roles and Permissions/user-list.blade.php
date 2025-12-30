@@ -59,10 +59,10 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Select Role</label>
-                                    <select name="role_id" class="form-select" required>
+                                    <select name="role_id" class="form-select">
                                         <option value="">Select Role</option>
                                         {{-- @foreach($role as $roles) --}}
-                                        <option value="{{ $roles->id }}">{{ $roles->rolename }}</option>
+                                        {{-- <option value="{{ $roles->id }}">{{ $roles->rolename }}</option> --}}
                                         {{-- @endforeach --}}
                                         <option value=""></option>
                                     </select>
