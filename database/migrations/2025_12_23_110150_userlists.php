@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('number')->unique();
             $table->string('password');
-            $table->foreignId('role_id')->nullable()->constrained('roles')->cascadeOnDelete();
+            $table->unsignedBigInteger('role_id')->nullable();
+            // $table->foreignId('role_id')->nullable()->constrained('roles')->cascadeOnDelete();
             $table->timestamps();
         });
     }
