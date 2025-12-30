@@ -136,8 +136,6 @@ class RolesPermission extends Controller
     //     return view('admin.Roles and Permissions.permissions');
     // }
 
-
-
     // public function getPermissions(Request $request)
     // {
     //     $permissions = Permission::select('id', 'permission_name')->get();
@@ -147,9 +145,6 @@ class RolesPermission extends Controller
     //         'data' => $permissions
     //     ]);
     // }
-
-
-
 
     // public function permissionsubmit(Request $request)
     // {

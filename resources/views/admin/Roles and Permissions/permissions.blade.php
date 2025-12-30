@@ -40,7 +40,7 @@
                             <form class="row g-3" method="post" action="" id="permissionForm">
                                 <div class="col-md-5">
                                     <label class="form-label">Permission Name</label>
-                                    <input type="text" name="permission_name" class="form-control"
+                                    <input type="text" name="name" class="form-control"
                                         placeholder="e.g., agent.create">
                                 </div>
 
@@ -103,7 +103,7 @@
 
                                 <div class="mb-3">
                                     <label>Permission Name</label>
-                                    <input type="text" id="edit_permissioname" name="permission_name"
+                                    <input type="text" id="edit_permissioname" name="name"
                                         class="form-control">
                                 </div>
 
@@ -204,7 +204,7 @@
                     }
                 },
 
-                { data: "permission_name" },
+                { data: "name" },
 
                 { data: "description" },
 
@@ -275,7 +275,7 @@
                 success: function (res) {
 
                     $("#edit_id").val(res.id);
-                    $("#edit_permissioname").val(res.permission_name);
+                    $("#edit_permissioname").val(res.name);
                     $("#edit_description").val(res.description);
 
                     $("#editpermissionModal").modal("show");

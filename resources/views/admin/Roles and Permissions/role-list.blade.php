@@ -42,9 +42,9 @@
                                 @csrf
                                 <div class="col-md-3">
                                     <label class="form-label">Role Name</label>
-                                    <input type="text" name="rolename" class="form-control"
+                                    <input type="text" name="name" class="form-control"
                                         placeholder="Enter role name">
-                                    <span class="text-danger error-text rolename_error"></span>
+                                    <span class="text-danger error-text name_error"></span>
 
                                 </div>
 
@@ -105,7 +105,7 @@
 
                                 <div class="mb-3">
                                     <label>Role Name</label>
-                                    <input type="text" id="edit_rolename" name="rolename" class="form-control">
+                                    <input type="text" id="edit_name" name="name" class="form-control">
                                 </div>
 
                                 <div class="mb-3">
@@ -204,7 +204,7 @@
                 }
             },
 
-            { data: "rolename" },
+            { data: "name" },
 
             { data: "description" },
 
@@ -275,7 +275,7 @@ $(document).on("click", ".editBtn", function () {
         success: function (res) {
 
             $("#edit_id").val(res.id);
-            $("#edit_rolename").val(res.rolename);
+            $("#edit_name").val(res.name);
             $("#edit_description").val(res.description);
 
             $("#editRoleModal").modal("show");
