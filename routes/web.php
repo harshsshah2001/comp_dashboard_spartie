@@ -25,13 +25,12 @@ Route::get('/role/list', [RoleController::class, 'rolelist'])->name('role.list')
 Route::get('/permissions', [PermissionController::class, 'permissions'])->name('permissions');
 Route::post('/permissions', [PermissionController::class, 'permissionsubmit'])->name('permissionsubmit');
 // fetch permissions list
-Route::get('/permissions/list', [PermissionController::class, 'getPermissions'])->name('permissions.list');
 Route::get('/permission/edit/{id}', [PermissionController::class, 'permissionedit'])->name('permissionedit');
 Route::post('/permission/update/{id}', [PermissionController::class, 'permissionupdate']);
 Route::delete('permission/delete/{id}', [PermissionController::class, 'permissiondelete'])->name('permissiondelete');
 Route::get('/role-permission-list', [RolesPermission::class, 'role_permission_list'])->name('role_permission_list');
-Route::post('/permissions/assign', [RolesPermission::class, 'assignPermissions'])
-    ->name('permissions.assign');
+Route::get('/permissions/list', [PermissionController::class, 'getPermissions'])->name('permissions.list');
+Route::post('/permissions/assign', [RolesPermission::class, 'assignPermissions'])->name('permissions.assign');
 
 Route::get('/user-lists', [RolesPermission::class, 'user_list'])->name('userlist');
 Route::post('/user/submit', [RolesPermission::class, 'usersubmit'])->name('user.submit');

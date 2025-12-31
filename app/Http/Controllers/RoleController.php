@@ -9,7 +9,7 @@ use App\Models\Role;
 
 class RoleController extends Controller
 {
-      protected $service;
+    protected $service;
 
     public function __construct(AdminService $service)
     {
@@ -32,27 +32,23 @@ class RoleController extends Controller
 
     public function rolesubmit(Request $request)
     {
-        $role_rules = [
+        $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'description' => 'nullable|string',
-        ];
+        ]);
 
-        $validator = Validator::make($request->all(), $role_rules);
+        Role::create([
+            'name'        => $request->name,
+            'description' => $request->description,
+            'guard_name'  => 'userlist', // ✅ REQUIRED
+        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        return $this->service->store(
-            $request,
-            $role_rules,
-            \App\Models\Role::class
-        );
+        return response()->json([
+            'status'  => true,
+            'message' => 'Role created successfully',
+        ]);
     }
+
 
     public function edit($id)
     {
@@ -60,33 +56,27 @@ class RoleController extends Controller
         return response()->json($role);
     }
 
-    public function update(Request $request, $id)
-    {
-        $model = \App\Models\Role::class;
+   public function update(Request $request, $id)
+{
+    $request->validate([
+        'name' => 'required|string|max:255|unique:roles,name,' . $id,
+        'description' => 'nullable|string',
+    ]);
 
-        $validation_rules = [
-            'name' => 'required|string|max:255|unique:roles,name,' . $id,
-            'description' => 'nullable|string',
-        ];
+    $role = Role::findOrFail($id);
 
-        $validator = Validator::make($request->all(), $validation_rules);
+    $role->update([
+        'name'        => $request->name,
+        'description' => $request->description,
+        'guard_name'  => 'userlist', // ✅ FORCE
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation failed',
-                'errors'  => $validator->errors()
-            ], 422);
-        }
+    return response()->json([
+        'status'  => true,
+        'message' => 'Role Updated Successfully'
+    ]);
+}
 
-        $updated = $this->service->update($request, $validation_rules, $model, $id);
-
-        if ($updated) {
-            return response()->json(['status' => true, 'message' => 'Role Updated Successfully']);
-        }
-
-        return response()->json(['status' => false, 'message' => 'Update Failed']);
-    }
 
     public function roledelete($id)
     {
@@ -111,5 +101,4 @@ class RoleController extends Controller
         }
         return view('admin.Roles and Permissions.role-list');
     }
-
 }

@@ -4,9 +4,14 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Traits\HasRoles;
 
 class Userlist extends Authenticatable
 {
+    use HasRoles;
+
+    protected $guard_name = 'userlist';
+
     protected $table = 'userlists';
 
     protected $fillable = [
@@ -17,22 +22,15 @@ class Userlist extends Authenticatable
         'role_id',
     ];
 
-   
-
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // Auto hash password
     public function setPasswordAttribute($value)
     {
         if (!empty($value)) {
             $this->attributes['password'] = Hash::make($value);
         }
     }
-
-
-
-
 }

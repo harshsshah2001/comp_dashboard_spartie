@@ -77,8 +77,20 @@
                                 </div>
 
                                 <div id="permissionsList" class="row">
-                                    <!-- Permissions will be dynamically loaded here -->
+                                    @foreach ($permissions as $permission)
+                                        <div class="col-md-4 mb-2">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="permissions[]"
+                                                    value="{{ (int) $permission->id }}">
+
+                                                <label class="form-check-label" for="permission_{{ $permission->id }}">
+                                                    {{ $permission->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
+
                             </div>
 
                             <div class="modal-footer">
@@ -118,7 +130,7 @@
             { data: "name" },
             { data: "description" },
 
-           {
+            {
                 data: 'id',
                 orderable: false,
                 render: function (id) {
@@ -139,38 +151,14 @@
     $(document).on('click', '.manage-permissions', function () {
         let roleId = $(this).data('id');
         $('#modal_role_id').val(roleId);
-        $('#permissionsList').html('');
 
-        $.ajax({
-            url: "{{ route('permissions.list') }}",
-            type: "GET",
-            success: function (res) {
-                if (res.status) {
-                    let html = '';
+        // reset checkboxes
+        $('.permission-checkbox').prop('checked', false);
+        $('#select_all_permissions').prop('checked', false);
 
-                    $.each(res.data, function (index, permission) {
-                        html += `
-                            <div class="col-md-4 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input permission-checkbox"
-                                        type="checkbox"
-                                        name="permissions[]"
-                                        value="${permission.id}"
-                                        id="permission_${permission.id}">
-                                    <label class="form-check-label" for="permission_${permission.id}">
-                                        ${permission.permission_name }
-                                    </label>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    $('#permissionsList').html(html);
-                    $('#managePermissionsModal').modal('show');
-                }
-            }
-        });
+        $('#managePermissionsModal').modal('show');
     });
+
 
     // Select All permissions
     $(document).on('change', '#select_all_permissions', function () {

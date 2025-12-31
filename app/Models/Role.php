@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Spatie\Permission\Models\Role as SpatieRole;
@@ -10,5 +9,9 @@ class Role extends SpatieRole
         'name',
         'guard_name',
         'description',
+    ];
+
+    protected $attributes = [
+        'guard_name' => 'userlist',
     ];
 }

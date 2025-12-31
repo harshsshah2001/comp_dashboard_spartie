@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
-use App\Models\Permission;
 use App\Models\Userlist;
 use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use App\Services\AdminService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-
+use App\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 
 class RolesPermission extends Controller
@@ -215,38 +215,40 @@ class RolesPermission extends Controller
 
     public function role_permission_list()
     {
-        return view('admin.Roles and Permissions.role-permission-list');
+        $permissions = Permission::all();
+        return view('admin.Roles and Permissions.role-permission-list', compact('permissions'));
     }
+
 
     public function user_list(Request $request)
     {
-        // if ($request->ajax()) {
+        if ($request->ajax()) {
 
-        //     // Get all users
-        //     $users = Userlist::all();
+            // Get all users
+            $users = Userlist::all();
 
-        //     // Get all roles and convert to key-value pair
-        //     // [ id => rolename ]
-        //     $roles = Role::pluck('rolename', 'id');
+            // Get all roles and convert to key-value pair
+            // [ id => rolename ]
+            $roles = Role::pluck('rolename', 'id');
 
-        //     // Attach role name manually
-        //     $users = $users->map(function ($user) use ($roles) {
-        //         return [
-        //             'id'    => $user->id,
-        //             'name'  => $user->name,
-        //             'email' => $user->email,
-        //             'role'  => $roles[$user->role_id] ?? '-',
-        //         ];
-        //     });
+            // Attach role name manually
+            $users = $users->map(function ($user) use ($roles) {
+                return [
+                    'id'    => $user->id,
+                    'name'  => $user->name,
+                    'email' => $user->email,
+                    'role'  => $roles[$user->role_id] ?? '-',
+                ];
+            });
 
-        //     return response()->json([
-        //         'data' => $users
-        //     ]);
-        // }
+            return response()->json([
+                'data' => $users
+            ]);
+        }
 
-        // // Page load
-        // $role = Role::all();
-        return view('admin.Roles and Permissions.user-list');
+        // Page load
+        $role = Role::all();
+        return view('admin.Roles and Permissions.user-list', compact('role'));
     }
 
     public function usersubmit(Request $request)
@@ -291,37 +293,31 @@ class RolesPermission extends Controller
         ]);
     }
 
-    // public function assignPermissions(Request $request)
-    // {
-    //     $request->validate([
-    //         'role_id' => 'required',
-    //         'permissions' => 'array'
-    //     ]);
 
-    //     $roleId = $request->role_id;
-    //     $permissions = $request->permissions ?? [];
+    public function assignPermissions(Request $request)
+    {
+        $request->validate([
+            'role_id'     => 'required|exists:roles,id',
+            'permissions' => 'array'
+        ]);
 
-    //     // 🔥 Delete old permissions for this role/user
-    //     UserPermission::where('user_id', $roleId)->delete();
+        $role = Role::findOrFail($request->role_id);
 
-    //     // 🔥 Insert new permissions
-    //     $data = [];
-    //     foreach ($permissions as $permissionId) {
-    //         $data[] = [
-    //             'user_id' => $roleId,          // storing role_id as user_id (as per your design)
-    //             'permission_id' => $permissionId,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ];
-    //     }
+        // ✅ DO NOT FILTER BY guard_name
+        $permissions = Permission::whereIn(
+            'id',
+            $request->permissions ?? []
+        )->get();
 
-    //     if (!empty($data)) {
-    //         UserPermission::insert($data);
-    //     }
+        // ✅ CLEAR CACHE
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Permissions assigned successfully'
-    //     ]);
-    // }
+        // ✅ ASSIGN
+        $role->givePermissionTo($permissions);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Permissions assigned successfully'
+        ]);
+    }
 }

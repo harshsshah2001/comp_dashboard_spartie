@@ -43,27 +43,21 @@ class PermissionController extends Controller
 
     public function permissionsubmit(Request $request)
     {
-        $permission_rules = [
+        $request->validate([
             'name' => 'required|string|max:255|unique:permissions,name',
             'description' => 'nullable|string',
-            'guard_name' => 'nullable|string|max:255',
-        ];
+        ]);
 
-        $validator = Validator::make($request->all(), $permission_rules);
+        Permission::create([
+            'name'        => $request->name,
+            'description' => $request->description,
+            'guard_name'  => 'userlist', // ✅ REQUIRED
+        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        return $this->service->store(
-            $request,
-            $permission_rules,
-            Permission::class
-        );
+        return response()->json([
+            'status'  => true,
+            'message' => 'Role created successfully',
+        ]);
     }
     public function permissiondelete($id)
     {
