@@ -8,8 +8,23 @@ use App\Services\AdminService;
 use App\Models\Category;
 use Illuminate\Support\Facades\Gate;
 
-class CategoryController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class CategoryController extends Controller implements HasMiddleware
 {
+
+
+
+public static function middleware(): array
+    {
+        return[
+            new Middleware('permission:create category', only:['store']),
+            new Middleware('permission:edit category', only:['edit']),
+            new Middleware('permission:update category', only:['update']),
+            new Middleware('permission:delete category', only:['delete']),
+        ];
+    }
 
     protected $service;
 
@@ -80,7 +95,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
 
-        
+
         $validation_rules = [
             'parentCategory' => 'nullable|string',
             'categoryTitle'  => 'required|string|max:255|min:3',

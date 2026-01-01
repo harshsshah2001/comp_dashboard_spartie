@@ -313,11 +313,19 @@ class RolesPermission extends Controller
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
         // ✅ ASSIGN
-        $role->givePermissionTo($permissions);
-
+        $role->syncPermissions($permissions);
         return response()->json([
             'status'  => true,
             'message' => 'Permissions assigned successfully'
+        ]);
+    }
+
+    public function getRolePermissions($id)
+    {
+        $role = Role::findOrFail($id);
+
+        return response()->json([
+            'permissions' => $role->permissions->pluck('id')
         ]);
     }
 }

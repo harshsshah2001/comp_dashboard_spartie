@@ -30,7 +30,11 @@ Route::post('/permission/update/{id}', [PermissionController::class, 'permission
 Route::delete('permission/delete/{id}', [PermissionController::class, 'permissiondelete'])->name('permissiondelete');
 Route::get('/role-permission-list', [RolesPermission::class, 'role_permission_list'])->name('role_permission_list');
 Route::get('/permissions/list', [PermissionController::class, 'getPermissions'])->name('permissions.list');
+
 Route::post('/permissions/assign', [RolesPermission::class, 'assignPermissions'])->name('permissions.assign');
+Route::get('/role/{id}/permissions', [RolesPermission::class, 'getRolePermissions'])->name('role.permissions');
+
+
 
 Route::get('/user-lists', [RolesPermission::class, 'user_list'])->name('userlist');
 Route::post('/user/submit', [RolesPermission::class, 'usersubmit'])->name('user.submit');

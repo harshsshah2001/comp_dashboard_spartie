@@ -6,15 +6,25 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Services\AdminService;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
 
+public static function middleware(): array
+    {
+        return[
+            new Middleware('permission:create products', only:['store']),
+            new Middleware('permission:edit products', only:['edit']),
+            new Middleware('permission:update products', only:['update']),
+            new Middleware('permission:delete products', only:['delete']),
+        ];
+    }
+
+
     protected $service;
-
-
-
 
     public function __construct(AdminService $service)
     {

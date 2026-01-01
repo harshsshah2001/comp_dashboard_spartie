@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Infocards;
 use App\Services\AdminService;
 use Illuminate\Http\Request;
-
 class InfocardsController extends Controller
 {
+
     protected $service;
 
     public function __construct(AdminService $service)
