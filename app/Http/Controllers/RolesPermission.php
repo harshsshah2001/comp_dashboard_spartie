@@ -295,30 +295,29 @@ class RolesPermission extends Controller
 
 
     public function assignPermissions(Request $request)
-    {
-        $request->validate([
-            'role_id'     => 'required|exists:roles,id',
-            'permissions' => 'array'
-        ]);
+{
+    $request->validate([
+        'role_id'     => 'required|exists:roles,id',
+        'permissions' => 'array'
+    ]);
 
-        $role = Role::findOrFail($request->role_id);
+    $role = Role::findOrFail($request->role_id);
 
-        // ✅ DO NOT FILTER BY guard_name
-        $permissions = Permission::whereIn(
-            'id',
-            $request->permissions ?? []
-        )->get();
+    $permissions = Permission::whereIn(
+        'id',
+        $request->permissions ?? []
+    )->get();
 
-        // ✅ CLEAR CACHE
-        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+    app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // ✅ ASSIGN
-        $role->syncPermissions($permissions);
-        return response()->json([
-            'status'  => true,
-            'message' => 'Permissions assigned successfully'
-        ]);
-    }
+    $role->syncPermissions($permissions);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Permissions assigned successfully'
+    ]);
+}
+
 
     public function getRolePermissions($id)
     {

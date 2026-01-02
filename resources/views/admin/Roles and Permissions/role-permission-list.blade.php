@@ -80,10 +80,8 @@
                                     @foreach ($permissions as $permission)
                                         <div class="col-md-4 mb-2">
                                             <div class="form-check">
-                                                <input type="checkbox"
-       class="permission-checkbox"
-       name="permissions[]"
-       value="{{ $permission->id }}">
+                                                <input type="checkbox" class="permission-checkbox" name="permissions[]"
+                                                    value="{{ $permission->id }}">
 
 
                                                 <label class="form-check-label" for="permission_{{ $permission->id }}">
@@ -150,80 +148,79 @@
 </script>
 
 <script>
-/* ===============================
-   OPEN MODAL + LOAD PERMISSIONS
-================================ */
-$(document).on('click', '.manage-permissions', function () {
+    /* ===============================
+       OPEN MODAL + LOAD PERMISSIONS
+    ================================ */
+    $(document).on('click', '.manage-permissions', function () {
 
-    let roleId = $(this).data('id');
-    $('#modal_role_id').val(roleId);
+        let roleId = $(this).data('id');
+        $('#modal_role_id').val(roleId);
 
-    // reset checkboxes
-    $('.permission-checkbox').prop('checked', false);
-    $('#select_all_permissions').prop('checked', false);
+        // reset checkboxes
+        $('.permission-checkbox').prop('checked', false);
+        $('#select_all_permissions').prop('checked', false);
 
-    // fetch assigned permissions
-    $.get("{{ url('/role') }}/" + roleId + "/permissions", function (res) {
+        // fetch assigned permissions
+        $.get("{{ url('/role') }}/" + roleId + "/permissions", function (res) {
 
-        res.permissions.forEach(function (permissionId) {
-            $('input.permission-checkbox[value="' + permissionId + '"]')
-                .prop('checked', true);
+            res.permissions.forEach(function (permissionId) {
+                $('input.permission-checkbox[value="' + permissionId + '"]')
+                    .prop('checked', true);
+            });
+
+            syncSelectAllCheckbox();
         });
 
+        $('#managePermissionsModal').modal('show');
+    });
+
+
+    /* ===============================
+       SELECT ALL CHECKBOX
+    ================================ */
+    $(document).on('change', '#select_all_permissions', function () {
+        $('.permission-checkbox').prop('checked', $(this).is(':checked'));
+    });
+
+
+    /* ===============================
+       INDIVIDUAL CHECKBOX → SYNC ALL
+    ================================ */
+    $(document).on('change', '.permission-checkbox', function () {
         syncSelectAllCheckbox();
     });
 
-    $('#managePermissionsModal').modal('show');
-});
+
+    /* ===============================
+       SYNC SELECT ALL FUNCTION
+    ================================ */
+    function syncSelectAllCheckbox() {
+        let total = $('.permission-checkbox').length;
+        let checked = $('.permission-checkbox:checked').length;
+
+        $('#select_all_permissions').prop('checked', total === checked);
+    }
 
 
-/* ===============================
-   SELECT ALL CHECKBOX
-================================ */
-$(document).on('change', '#select_all_permissions', function () {
-    $('.permission-checkbox').prop('checked', $(this).is(':checked'));
-});
+    /* ===============================
+       SAVE PERMISSIONS
+    ================================ */
+    $('#assignPermissionsForm').on('submit', function (e) {
+        e.preventDefault();
 
-
-/* ===============================
-   INDIVIDUAL CHECKBOX → SYNC ALL
-================================ */
-$(document).on('change', '.permission-checkbox', function () {
-    syncSelectAllCheckbox();
-});
-
-
-/* ===============================
-   SYNC SELECT ALL FUNCTION
-================================ */
-function syncSelectAllCheckbox() {
-    let total = $('.permission-checkbox').length;
-    let checked = $('.permission-checkbox:checked').length;
-
-    $('#select_all_permissions').prop('checked', total === checked);
-}
-
-
-/* ===============================
-   SAVE PERMISSIONS
-================================ */
-$('#assignPermissionsForm').on('submit', function (e) {
-    e.preventDefault();
-
-    $.ajax({
-        url: "{{ route('permissions.assign') }}",
-        type: "POST",
-        data: $(this).serialize(),
-        headers: {
-            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-        },
-        success: function (res) {
-            if (res.status) {
-                $('#managePermissionsModal').modal('hide');
-                alert(res.message);
+        $.ajax({
+            url: "{{ route('permissions.assign') }}",
+            type: "POST",
+            data: $(this).serialize(),
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            success: function (res) {
+                if (res.status) {
+                    $('#managePermissionsModal').modal('hide');
+                    alert(res.message);
+                }
             }
-        }
+        });
     });
-});
 </script>
-

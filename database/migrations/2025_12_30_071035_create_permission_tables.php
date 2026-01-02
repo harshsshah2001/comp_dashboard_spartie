@@ -21,15 +21,17 @@ return new class extends Migration
         throw_if($teams && empty($columnNames['team_foreign_key'] ?? null), Exception::class, 'Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.');
 
         Schema::create($tableNames['permissions'], static function (Blueprint $table) {
-            // $table->engine('InnoDB');
-            $table->bigIncrements('id'); // permission id
-            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
+            $table->bigIncrements('id');
+            $table->string('name', 125);      // ✅ reduced
             $table->string('description')->nullable();
-            $table->string('guard_name')->nullable(); // For MyISAM use string('guard_name', 25);
+
+            $table->string('guard_name', 50);   // ✅ reduced
             $table->timestamps();
 
-            $table->unique(['name', 'guard_name']);
+            $table->unique(['name']);
         });
+
+
 
         Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teams, $columnNames) {
             // $table->engine('InnoDB');
@@ -38,21 +40,21 @@ return new class extends Migration
                 $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
                 $table->index($columnNames['team_foreign_key'], 'roles_team_foreign_key_index');
             }
-            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
+            $table->string('name', 125);      // ✅ reduce
             $table->string('description')->nullable();
-            $table->string('guard_name')->nullable(); // For MyISAM use string('guard_name', 25);
+            $table->string('guard_name', 50); // ✅ reduce
             $table->timestamps();
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
-                $table->unique(['name', 'guard_name']);
+                $table->unique(['name']);
             }
         });
 
         Schema::create($tableNames['model_has_permissions'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
             $table->unsignedBigInteger($pivotPermission);
 
-            $table->string('model_type');
+            $table->string('model_type', 191);
             $table->unsignedBigInteger($columnNames['model_morph_key']);
             $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_permissions_model_id_model_type_index');
 
@@ -79,7 +81,7 @@ return new class extends Migration
         Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
             $table->unsignedBigInteger($pivotRole);
 
-            $table->string('model_type');
+            $table->string('model_type', 191);
             $table->unsignedBigInteger($columnNames['model_morph_key']);
             $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_roles_model_id_model_type_index');
 

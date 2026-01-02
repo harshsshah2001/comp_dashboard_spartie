@@ -154,7 +154,15 @@
                                                 </div>
                                             </div>
 
-                                            <button type="submit" class="btn btn-primary">Submit</button>
+@can('create product')
+    <button type="submit" class="btn btn-primary">
+        Submit
+    </button>
+@else
+    <button type="button" class="btn btn-secondary" disabled>
+        No Permission
+    </button>
+@endcan
                                         </form>
 
 
